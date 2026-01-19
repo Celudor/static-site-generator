@@ -122,7 +122,12 @@ def markdown_to_html_node(markdown):
             p.append(ParentNode(f"h{count}", text_to_htmlnodes(parts[0][1])))
         elif block_type == BlockType.QUOTE:
             p.append(
-                ParentNode("blockquote", text_to_htmlnodes(block.replace("> ", "")))
+                ParentNode(
+                    "blockquote",
+                    text_to_htmlnodes(
+                        block.replace("> ", "").replace("\n", " ").strip()
+                    ),
+                )
             )
         elif block_type == BlockType.UNORDERED_LIST:
             c = []
@@ -192,3 +197,17 @@ def generate_page(from_path, template_path, dest_path):
     page = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
     with open(dest_path, "w") as f:
         f.write(page)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for item in os.listdir(dir_path_content):
+        source_path = os.path.join(dir_path_content, item)
+        if os.path.isfile(source_path):
+            basename = os.path.splitext(item)
+            if basename[1] == ".md":
+                dest_path = os.path.join(dest_dir_path, f"{basename[0]}.html")
+                generate_page(source_path, template_path, dest_path)
+        else:
+            dest_path = os.path.join(dest_dir_path, item)
+            os.mkdir(dest_path)
+            generate_pages_recursive(source_path, template_path, dest_path)

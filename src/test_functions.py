@@ -210,11 +210,12 @@ the **same** even with inline stuff
     def test_quotes(self):
         md = """
 > This is quote
+> 
 > second one line
 """
         self.assertEqual(
             markdown_to_html_node(md).to_html(),
-            "<div><blockquote>This is quote\nsecond one line</blockquote></div>",
+            "<div><blockquote>This is quote  second one line</blockquote></div>",
         )
 
     def test_unordered_list(self):
